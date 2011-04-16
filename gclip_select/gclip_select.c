@@ -41,7 +41,7 @@ struct _Block1Data {
 
 struct _Block2Data {
 	int _ref_count_;
-	GtkTreeView* list_view;
+	GtkTreeView* list_box;
 	char* content;
 };
 
@@ -53,12 +53,12 @@ GtkClipboard* clip = NULL;
 extern GeeHashMap* content_table;
 GeeHashMap* content_table = NULL;
 
-void setup_list_view (GtkTreeView* list_view);
+void setup_list_box (GtkTreeView* list_box);
 static void _lambda0_ (Block1Data* _data1_);
 static void __lambda0__gtk_tree_selection_changed (GtkTreeSelection* _sender, gpointer self);
 static Block1Data* block1_data_ref (Block1Data* _data1_);
 static void block1_data_unref (Block1Data* _data1_);
-void add_entry_to_list_view (GtkTreeView* list_view, const char* content);
+void add_entry_to_list_box (GtkTreeView* list_box, const char* content);
 gint _vala_main (char** args, int args_length1);
 static GtkTreeIter* _gtk_tree_iter_dup (GtkTreeIter* self);
 static void _gtk_main_quit_gtk_object_destroy (GtkObject* _sender, gpointer self);
@@ -112,28 +112,29 @@ static void block1_data_unref (Block1Data* _data1_) {
 }
 
 
-void setup_list_view (GtkTreeView* list_view) {
+void setup_list_box (GtkTreeView* list_box) {
 	Block1Data* _data1_;
 	GtkCellRendererText* _tmp0_;
-	g_return_if_fail (list_view != NULL);
+	g_return_if_fail (list_box != NULL);
 	_data1_ = g_slice_new0 (Block1Data);
 	_data1_->_ref_count_ = 1;
 	_data1_->list_model = gtk_list_store_new (1, G_TYPE_STRING);
-	gtk_tree_view_set_model (list_view, (GtkTreeModel*) _data1_->list_model);
-	gtk_tree_view_insert_column_with_attributes (list_view, -1, "Clip content Selector", (GtkCellRenderer*) (_tmp0_ = g_object_ref_sink ((GtkCellRendererText*) gtk_cell_renderer_text_new ())), "text", 0, NULL);
+	gtk_tree_view_set_rules_hint (list_box, TRUE);
+	gtk_tree_view_set_model (list_box, (GtkTreeModel*) _data1_->list_model);
+	gtk_tree_view_insert_column_with_attributes (list_box, -1, "Clip content Selector", (GtkCellRenderer*) (_tmp0_ = g_object_ref_sink ((GtkCellRendererText*) gtk_cell_renderer_text_new ())), "text", 0, NULL);
 	_g_object_unref0 (_tmp0_);
-	gtk_tree_view_set_headers_visible (list_view, FALSE);
-	_data1_->selection = _g_object_ref0 (gtk_tree_view_get_selection (list_view));
+	gtk_tree_view_set_headers_visible (list_box, FALSE);
+	_data1_->selection = _g_object_ref0 (gtk_tree_view_get_selection (list_box));
 	g_signal_connect_data (_data1_->selection, "changed", (GCallback) __lambda0__gtk_tree_selection_changed, block1_data_ref (_data1_), (GClosureNotify) block1_data_unref, 0);
 	block1_data_unref (_data1_);
 }
 
 
-void add_entry_to_list_view (GtkTreeView* list_view, const char* content) {
+void add_entry_to_list_box (GtkTreeView* list_box, const char* content) {
 	GtkTreeIter iter = {0};
 	char* cksum;
 	GtkTreeSelection* selection;
-	g_return_if_fail (list_view != NULL);
+	g_return_if_fail (list_box != NULL);
 	g_return_if_fail (content != NULL);
 	cksum = g_compute_checksum_for_string (G_CHECKSUM_SHA256, content, -1);
 	if (gee_abstract_map_has_key ((GeeAbstractMap*) content_table, cksum)) {
@@ -142,13 +143,13 @@ void add_entry_to_list_view (GtkTreeView* list_view, const char* content) {
 		_g_free0 (_tmp0_);
 	} else {
 		GtkListStore* list_model;
-		list_model = _g_object_ref0 (GTK_LIST_STORE (gtk_tree_view_get_model (list_view)));
+		list_model = _g_object_ref0 (GTK_LIST_STORE (gtk_tree_view_get_model (list_box)));
 		gtk_list_store_append (list_model, &iter);
 		gtk_list_store_set (list_model, &iter, 0, content, -1);
 		gee_abstract_map_set ((GeeAbstractMap*) content_table, cksum, &iter);
 		_g_object_unref0 (list_model);
 	}
-	selection = _g_object_ref0 (gtk_tree_view_get_selection (list_view));
+	selection = _g_object_ref0 (gtk_tree_view_get_selection (list_box));
 	gtk_tree_selection_select_iter (selection, &iter);
 	_g_object_unref0 (selection);
 	_g_free0 (cksum);
@@ -173,7 +174,7 @@ static void _lambda1_ (GdkEvent* e, Block2Data* _data2_) {
 	if (!self_set) {
 		char* _tmp0_;
 		_data2_->content = (_tmp0_ = g_strdup (gtk_clipboard_wait_for_text (clip)), _g_free0 (_data2_->content), _tmp0_);
-		add_entry_to_list_view (_data2_->list_view, _data2_->content);
+		add_entry_to_list_box (_data2_->list_box, _data2_->content);
 	} else {
 		self_set = FALSE;
 	}
@@ -194,7 +195,7 @@ static Block2Data* block2_data_ref (Block2Data* _data2_) {
 static void block2_data_unref (Block2Data* _data2_) {
 	if (g_atomic_int_dec_and_test (&_data2_->_ref_count_)) {
 		_g_free0 (_data2_->content);
-		_g_object_unref0 (_data2_->list_view);
+		_g_object_unref0 (_data2_->list_box);
 		g_slice_free (Block2Data, _data2_);
 	}
 }
@@ -205,6 +206,7 @@ gint _vala_main (char** args, int args_length1) {
 	Block2Data* _data2_;
 	GeeHashMap* _tmp0_;
 	GtkWindow* window;
+	GtkScrolledWindow* list_view;
 	GtkClipboard* _tmp1_;
 	_data2_ = g_slice_new0 (Block2Data);
 	_data2_->_ref_count_ = 1;
@@ -212,20 +214,25 @@ gint _vala_main (char** args, int args_length1) {
 	content_table = (_tmp0_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, GTK_TYPE_TREE_ITER, (GBoxedCopyFunc) _gtk_tree_iter_dup, g_free, NULL, NULL, NULL), _g_object_unref0 (content_table), _tmp0_);
 	window = g_object_ref_sink ((GtkWindow*) gtk_window_new (GTK_WINDOW_TOPLEVEL));
 	gtk_window_set_title (window, "Clipboard Selection Manager");
-	_data2_->list_view = g_object_ref_sink ((GtkTreeView*) gtk_tree_view_new ());
-	setup_list_view (_data2_->list_view);
-	gtk_container_add ((GtkContainer*) window, (GtkWidget*) _data2_->list_view);
+	list_view = g_object_ref_sink ((GtkScrolledWindow*) gtk_scrolled_window_new (NULL, NULL));
+	gtk_scrolled_window_set_policy (list_view, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type (list_view, GTK_SHADOW_ETCHED_IN);
+	_data2_->list_box = g_object_ref_sink ((GtkTreeView*) gtk_tree_view_new ());
+	setup_list_box (_data2_->list_box);
+	gtk_container_add ((GtkContainer*) list_view, (GtkWidget*) _data2_->list_box);
+	gtk_container_add ((GtkContainer*) window, (GtkWidget*) list_view);
 	gtk_window_set_default_size (window, 200, 200);
 	gtk_widget_show_all ((GtkWidget*) window);
 	clip = (_tmp1_ = _g_object_ref0 (gtk_clipboard_get (GDK_SELECTION_PRIMARY)), _g_object_unref0 (clip), _tmp1_);
 	_data2_->content = g_strdup (gtk_clipboard_wait_for_text (clip));
 	if (_data2_->content != NULL) {
-		add_entry_to_list_view (_data2_->list_view, _data2_->content);
+		add_entry_to_list_box (_data2_->list_box, _data2_->content);
 	}
 	g_signal_connect ((GtkObject*) window, "destroy", (GCallback) _gtk_main_quit_gtk_object_destroy, NULL);
 	g_signal_connect_data (clip, "owner-change", (GCallback) __lambda1__gtk_clipboard_owner_change, block2_data_ref (_data2_), (GClosureNotify) block2_data_unref, 0);
 	gtk_main ();
 	result = 0;
+	_g_object_unref0 (list_view);
 	_g_object_unref0 (window);
 	block2_data_unref (_data2_);
 	return result;

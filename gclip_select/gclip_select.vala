@@ -26,14 +26,15 @@ Clipboard clip;
 
 HashMap<string, TreeIter?> content_table ;
 
-void setup_list_view(Gtk.TreeView list_view)
+void setup_list_box(Gtk.TreeView list_box)
 {
     var list_model = new ListStore(1, typeof(string));
-    list_view.set_model(list_model);
+    list_box.set_rules_hint(true);
+    list_box.set_model(list_model);
     
-    list_view.insert_column_with_attributes(-1, "Clip content Selector", new CellRendererText(), "text", 0);
-    list_view.set_headers_visible(false);
-    TreeSelection selection = list_view.get_selection();
+    list_box.insert_column_with_attributes(-1, "Clip content Selector", new CellRendererText(), "text", 0);
+    list_box.set_headers_visible(false);
+    TreeSelection selection = list_box.get_selection();
     
     selection.changed.connect(() =>
     {
@@ -49,7 +50,7 @@ void setup_list_view(Gtk.TreeView list_view)
     });
 }
 
-void add_entry_to_list_view(TreeView list_view, string content)
+void add_entry_to_list_box(TreeView list_box, string content)
 {
     TreeIter iter;
     string cksum = Checksum.compute_for_string(GLib.ChecksumType.SHA256, content);
@@ -61,13 +62,13 @@ void add_entry_to_list_view(TreeView list_view, string content)
     else
     {
 		
-		ListStore list_model = (ListStore) list_view.get_model();
+		ListStore list_model = (ListStore) list_box.get_model();
 		list_model.append(out iter);
 		
 		list_model.set(iter, 0, content);   
 		content_table[cksum] = iter;
     }
-    TreeSelection selection = list_view.get_selection();
+    TreeSelection selection = list_box.get_selection();
     selection.select_iter(iter);
 
 }
@@ -80,8 +81,14 @@ int main(string[] args)
     
     Gtk.Window window = new Window();
     window.title = "Clipboard Selection Manager";
-    Gtk.TreeView list_view = new TreeView();
-    setup_list_view(list_view);
+    Gtk.ScrolledWindow list_view = new ScrolledWindow(null, null);
+    
+    list_view.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+    list_view.set_shadow_type(Gtk.ShadowType.ETCHED_IN);
+    
+    Gtk.TreeView list_box = new TreeView();
+    setup_list_box(list_box);
+    list_view.add(list_box);
     window.add(list_view);
     window.set_default_size(200, 200);
     window.show_all();
@@ -89,7 +96,7 @@ int main(string[] args)
     clip = Clipboard.get(Gdk.SELECTION_PRIMARY);
     string content = clip.wait_for_text();
     if (content != null)
-        add_entry_to_list_view(list_view, content);
+        add_entry_to_list_box(list_box, content);
     
     window.destroy.connect(Gtk.main_quit);
     
@@ -98,7 +105,7 @@ int main(string[] args)
         if (!self_set)
         {
 	    content = clip.wait_for_text();
-	    add_entry_to_list_view(list_view, content);
+	    add_entry_to_list_box(list_box, content);
 	}
         else
             self_set = false;
