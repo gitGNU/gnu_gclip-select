@@ -1,0 +1,44 @@
+This is gclip_select, a small program that allows you to re-select from the text
+lines that were selected at one time or another as the X Primary Selection. This
+is useful when, in X Windows, if you have selected something using the left
+mouse button (as in the convention of the X Windows System) and you later
+select something else but want to get back to the earlier selection.
+
+Thus this program allows you to quickly switch between frequently copied texts
+for pasting. When you select some text you will notice gclip_select window adds
+the newly selected text to the list. And you can choose any earlier selection in
+the list window to make it the X11 primary selection again; you can then past it
+using the middle mouse button.
+
+This program is written in Vala and requires gtk+2.0, glib 2.8 (or above) and
+libgee 1.0 (or above), but you can build it following the usual GNU convention,
+that is,
+
+./configure --prefix=<install dir> 
+make 
+make install
+
+to run it from the command line type
+
+gclip_select &
+
+
+This program is licensed under the GNU General Public License, version 3 or
+later, as published by the Free Software Foundation. See the license text in the
+file LICENSE.
+
+gclip_select is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+Hopefully this program is useful to you.
+
+Changes:
+     
+     Version 0.2, 20110408: add check for duplicated selections, to avoid adding
+        duplicated entries
+     
+     Version 0.1, 20110407: initial release
+
+Andy Tai
+atai@atai.org
