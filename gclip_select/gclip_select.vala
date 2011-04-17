@@ -18,6 +18,7 @@
 */
 
 using GLib;
+using Pango;
 using Gtk;
 using Gee;
 
@@ -31,8 +32,11 @@ void setup_list_box(Gtk.TreeView list_box)
     var list_model = new ListStore(1, typeof(string));
     list_box.set_rules_hint(true);
     list_box.set_model(list_model);
+    CellRendererText text_renderer = new CellRendererText();
+    text_renderer.ellipsize_set = true;
+    text_renderer.ellipsize = Pango.EllipsizeMode.END;
     
-    list_box.insert_column_with_attributes(-1, "Clip content Selector", new CellRendererText(), "text", 0);
+    list_box.insert_column_with_attributes(-1, "Clip content Selector", text_renderer, "text", 0);
     list_box.set_headers_visible(false);
     TreeSelection selection = list_box.get_selection();
     
@@ -80,7 +84,12 @@ int main(string[] args)
     content_table = new HashMap<string, TreeIter?>();
     
     Gtk.Window window = new Window();
+    Gtk.Button delete_button, delete_all_button;
+    Gtk.HBox panel = new Gtk.HBox(false, 4);
+    
     window.title = "Clipboard Selection Manager";
+    Gtk.VBox vbox = new Gtk.VBox(false, 2);
+    
     Gtk.ScrolledWindow list_view = new ScrolledWindow(null, null);
     
     list_view.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
@@ -89,7 +98,17 @@ int main(string[] args)
     Gtk.TreeView list_box = new TreeView();
     setup_list_box(list_box);
     list_view.add(list_box);
-    window.add(list_view);
+    vbox.pack_start(list_view);
+    
+    
+    delete_button = new Button.with_label("Delete");
+    delete_all_button = new Button.with_label("Delete All");
+    
+    panel.pack_start(delete_button, false, false);
+    panel.pack_start(delete_all_button, false, false);
+    
+    vbox.pack_end(panel, false, false);
+    window.add(vbox);
     window.set_default_size(200, 200);
     window.show_all();
     

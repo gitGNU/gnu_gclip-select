@@ -15466,12 +15466,12 @@ if test -n "$GUI_CFLAGS"; then
     pkg_cv_GUI_CFLAGS="$GUI_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 glib-2.0 gee-1.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 glib-2.0 gee-1.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 glib-2.0 gee-1.0 pango\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 glib-2.0 gee-1.0 pango") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GUI_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 glib-2.0 gee-1.0" 2>/dev/null`
+  pkg_cv_GUI_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 glib-2.0 gee-1.0 pango" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -15482,12 +15482,12 @@ if test -n "$GUI_LIBS"; then
     pkg_cv_GUI_LIBS="$GUI_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 glib-2.0 gee-1.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 glib-2.0 gee-1.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 glib-2.0 gee-1.0 pango\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 glib-2.0 gee-1.0 pango") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GUI_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 glib-2.0 gee-1.0" 2>/dev/null`
+  pkg_cv_GUI_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 glib-2.0 gee-1.0 pango" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -15507,14 +15507,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        GUI_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "gtk+-2.0 glib-2.0 gee-1.0" 2>&1`
+	        GUI_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "gtk+-2.0 glib-2.0 gee-1.0 pango" 2>&1`
         else 
-	        GUI_PKG_ERRORS=`$PKG_CONFIG --print-errors "gtk+-2.0 glib-2.0 gee-1.0" 2>&1`
+	        GUI_PKG_ERRORS=`$PKG_CONFIG --print-errors "gtk+-2.0 glib-2.0 gee-1.0 pango" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GUI_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gtk+-2.0 glib-2.0 gee-1.0) were not met:
+	as_fn_error $? "Package requirements (gtk+-2.0 glib-2.0 gee-1.0 pango) were not met:
 
 $GUI_PKG_ERRORS
 

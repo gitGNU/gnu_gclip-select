@@ -26,6 +26,7 @@
 #include <gee.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pango/pango.h>
 #include <gdk/gdk.h>
 
 #define _g_object_unref0(var) ((var == NULL) ? NULL : (var = (g_object_unref (var), NULL)))
@@ -114,18 +115,21 @@ static void block1_data_unref (Block1Data* _data1_) {
 
 void setup_list_box (GtkTreeView* list_box) {
 	Block1Data* _data1_;
-	GtkCellRendererText* _tmp0_;
+	GtkCellRendererText* text_renderer;
 	g_return_if_fail (list_box != NULL);
 	_data1_ = g_slice_new0 (Block1Data);
 	_data1_->_ref_count_ = 1;
 	_data1_->list_model = gtk_list_store_new (1, G_TYPE_STRING);
 	gtk_tree_view_set_rules_hint (list_box, TRUE);
 	gtk_tree_view_set_model (list_box, (GtkTreeModel*) _data1_->list_model);
-	gtk_tree_view_insert_column_with_attributes (list_box, -1, "Clip content Selector", (GtkCellRenderer*) (_tmp0_ = g_object_ref_sink ((GtkCellRendererText*) gtk_cell_renderer_text_new ())), "text", 0, NULL);
-	_g_object_unref0 (_tmp0_);
+	text_renderer = g_object_ref_sink ((GtkCellRendererText*) gtk_cell_renderer_text_new ());
+	g_object_set (text_renderer, "ellipsize-set", TRUE, NULL);
+	g_object_set (text_renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+	gtk_tree_view_insert_column_with_attributes (list_box, -1, "Clip content Selector", (GtkCellRenderer*) text_renderer, "text", 0, NULL);
 	gtk_tree_view_set_headers_visible (list_box, FALSE);
 	_data1_->selection = _g_object_ref0 (gtk_tree_view_get_selection (list_box));
 	g_signal_connect_data (_data1_->selection, "changed", (GCallback) __lambda0__gtk_tree_selection_changed, block1_data_ref (_data1_), (GClosureNotify) block1_data_unref, 0);
+	_g_object_unref0 (text_renderer);
 	block1_data_unref (_data1_);
 }
 
@@ -206,24 +210,40 @@ gint _vala_main (char** args, int args_length1) {
 	Block2Data* _data2_;
 	GeeHashMap* _tmp0_;
 	GtkWindow* window;
+	GtkButton* delete_button;
+	GtkButton* delete_all_button;
+	GtkHBox* panel;
+	GtkVBox* vbox;
 	GtkScrolledWindow* list_view;
-	GtkClipboard* _tmp1_;
+	GtkButton* _tmp1_;
+	GtkButton* _tmp2_;
+	GtkClipboard* _tmp3_;
 	_data2_ = g_slice_new0 (Block2Data);
 	_data2_->_ref_count_ = 1;
 	gtk_init (&args_length1, &args);
 	content_table = (_tmp0_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, GTK_TYPE_TREE_ITER, (GBoxedCopyFunc) _gtk_tree_iter_dup, g_free, NULL, NULL, NULL), _g_object_unref0 (content_table), _tmp0_);
 	window = g_object_ref_sink ((GtkWindow*) gtk_window_new (GTK_WINDOW_TOPLEVEL));
+	delete_button = NULL;
+	delete_all_button = NULL;
+	panel = g_object_ref_sink ((GtkHBox*) gtk_hbox_new (FALSE, 4));
 	gtk_window_set_title (window, "Clipboard Selection Manager");
+	vbox = g_object_ref_sink ((GtkVBox*) gtk_vbox_new (FALSE, 2));
 	list_view = g_object_ref_sink ((GtkScrolledWindow*) gtk_scrolled_window_new (NULL, NULL));
 	gtk_scrolled_window_set_policy (list_view, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type (list_view, GTK_SHADOW_ETCHED_IN);
 	_data2_->list_box = g_object_ref_sink ((GtkTreeView*) gtk_tree_view_new ());
 	setup_list_box (_data2_->list_box);
 	gtk_container_add ((GtkContainer*) list_view, (GtkWidget*) _data2_->list_box);
-	gtk_container_add ((GtkContainer*) window, (GtkWidget*) list_view);
+	gtk_box_pack_start ((GtkBox*) vbox, (GtkWidget*) list_view, TRUE, TRUE, 0);
+	delete_button = (_tmp1_ = g_object_ref_sink ((GtkButton*) gtk_button_new_with_label ("Delete")), _g_object_unref0 (delete_button), _tmp1_);
+	delete_all_button = (_tmp2_ = g_object_ref_sink ((GtkButton*) gtk_button_new_with_label ("Delete All")), _g_object_unref0 (delete_all_button), _tmp2_);
+	gtk_box_pack_start ((GtkBox*) panel, (GtkWidget*) delete_button, FALSE, FALSE, 0);
+	gtk_box_pack_start ((GtkBox*) panel, (GtkWidget*) delete_all_button, FALSE, FALSE, 0);
+	gtk_box_pack_end ((GtkBox*) vbox, (GtkWidget*) panel, FALSE, FALSE, 0);
+	gtk_container_add ((GtkContainer*) window, (GtkWidget*) vbox);
 	gtk_window_set_default_size (window, 200, 200);
 	gtk_widget_show_all ((GtkWidget*) window);
-	clip = (_tmp1_ = _g_object_ref0 (gtk_clipboard_get (GDK_SELECTION_PRIMARY)), _g_object_unref0 (clip), _tmp1_);
+	clip = (_tmp3_ = _g_object_ref0 (gtk_clipboard_get (GDK_SELECTION_PRIMARY)), _g_object_unref0 (clip), _tmp3_);
 	_data2_->content = g_strdup (gtk_clipboard_wait_for_text (clip));
 	if (_data2_->content != NULL) {
 		add_entry_to_list_box (_data2_->list_box, _data2_->content);
@@ -233,6 +253,10 @@ gint _vala_main (char** args, int args_length1) {
 	gtk_main ();
 	result = 0;
 	_g_object_unref0 (list_view);
+	_g_object_unref0 (vbox);
+	_g_object_unref0 (panel);
+	_g_object_unref0 (delete_all_button);
+	_g_object_unref0 (delete_button);
 	_g_object_unref0 (window);
 	block2_data_unref (_data2_);
 	return result;

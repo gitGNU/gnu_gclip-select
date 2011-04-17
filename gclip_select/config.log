@@ -398,7 +398,7 @@ configure:10520: checking how to hardcode library paths into programs
 configure:10545: result: immediate
 configure:10639: checking for shl_load
 configure:10639: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccOJpJq6.o: In function `main':
+/tmp/ccAX2IPH.o: In function `main':
 /home/atai/git_repo/gclip_select/conftest.c:62: undefined reference to `shl_load'
 collect2: ld returned 1 exit status
 configure:10639: $? = 1
@@ -520,7 +520,7 @@ configure: failed program was:
 configure:10677: result: no
 configure:10682: checking for dlopen
 configure:10682: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccghMw9i.o: In function `main':
+/tmp/ccli5UpO.o: In function `main':
 /home/atai/git_repo/gclip_select/conftest.c:62: undefined reference to `dlopen'
 collect2: ld returned 1 exit status
 configure:10682: $? = 1
@@ -793,9 +793,9 @@ configure:15424: result: /usr/bin/pkg-config
 configure:15449: checking pkg-config is at least version 0.9.0
 configure:15452: result: yes
 configure:15462: checking for GUI
-configure:15469: $PKG_CONFIG --exists --print-errors "gtk+-2.0 glib-2.0 gee-1.0"
+configure:15469: $PKG_CONFIG --exists --print-errors "gtk+-2.0 glib-2.0 gee-1.0 pango"
 configure:15472: $? = 0
-configure:15485: $PKG_CONFIG --exists --print-errors "gtk+-2.0 glib-2.0 gee-1.0"
+configure:15485: $PKG_CONFIG --exists --print-errors "gtk+-2.0 glib-2.0 gee-1.0 pango"
 configure:15488: $? = 0
 configure:15547: result: yes
 configure:15721: creating ./config.status
@@ -916,7 +916,7 @@ lt_cv_sys_global_symbol_to_c_name_address_lib_prefix='sed -n -e '\''s/^: \([^ ]*
 lt_cv_sys_global_symbol_to_cdecl='sed -n -e '\''s/^T .* \(.*\)$/extern int \1();/p'\'' -e '\''s/^[ABCDGIRSTW]* .* \(.*\)$/extern char \1;/p'\'''
 lt_cv_sys_max_cmd_len=1572864
 pkg_cv_GUI_CFLAGS='-pthread -I/usr/include/gtk-2.0 -I/usr/lib64/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/gee-1.0  '
-pkg_cv_GUI_LIBS='-pthread -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lm -lcairo -lpng12 -lpango-1.0 -lfreetype -lfontconfig -lgmodule-2.0 -lgee -lgobject-2.0 -lgthread-2.0 -lrt -lglib-2.0  '
+pkg_cv_GUI_LIBS='-pthread -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lm -lcairo -lpng12 -lfreetype -lfontconfig -lgee -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0  '
 
 ## ----------------- ##
 ## Output variables. ##
@@ -956,7 +956,7 @@ EXEEXT=''
 FGREP='/bin/grep -F'
 GREP='/bin/grep'
 GUI_CFLAGS='-pthread -I/usr/include/gtk-2.0 -I/usr/lib64/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/gee-1.0  '
-GUI_LIBS='-pthread -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lm -lcairo -lpng12 -lpango-1.0 -lfreetype -lfontconfig -lgmodule-2.0 -lgee -lgobject-2.0 -lgthread-2.0 -lrt -lglib-2.0  '
+GUI_LIBS='-pthread -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lm -lcairo -lpng12 -lfreetype -lfontconfig -lgee -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0  '
 INSTALL_DATA='${INSTALL} -m 644'
 INSTALL_PROGRAM='${INSTALL}'
 INSTALL_SCRIPT='${INSTALL}'

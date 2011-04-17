@@ -24,7 +24,7 @@ AM_PROG_VALAC([0.7.0])
 
 AC_DEFINE(_GNU_SOURCE, 1)
 
-PKG_CHECK_MODULES(GUI, [gtk+-2.0 glib-2.0 gee-1.0])
+PKG_CHECK_MODULES(GUI, [gtk+-2.0 glib-2.0 gee-1.0 pango])
 
 AC_SUBST(GUI_CFLAGS)
 
