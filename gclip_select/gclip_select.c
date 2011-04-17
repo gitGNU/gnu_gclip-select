@@ -43,6 +43,7 @@ struct _Block1Data {
 
 struct _Block2Data {
 	int _ref_count_;
+	GtkScrolledWindow* list_view;
 	GtkTreeView* list_box;
 	gchar* content;
 };
@@ -50,6 +51,8 @@ struct _Block2Data {
 
 extern gboolean self_set;
 gboolean self_set = FALSE;
+extern gboolean new_insert;
+gboolean new_insert = FALSE;
 extern GtkClipboard* clip;
 GtkClipboard* clip = NULL;
 extern GeeHashMap* content_table;
@@ -79,6 +82,8 @@ static void __lambda2__gtk_button_released (GtkButton* _sender, gpointer self);
 static void _gtk_main_quit_gtk_object_destroy (GtkObject* _sender, gpointer self);
 static void _lambda3_ (GdkEvent* e, Block2Data* _data2_);
 static void __lambda3__gtk_clipboard_owner_change (GtkClipboard* _sender, GdkEvent* p0, gpointer self);
+static void _lambda4_ (GdkRectangle* rect, Block2Data* _data2_);
+static void __lambda4__gtk_widget_size_allocate (GtkWidget* _sender, GdkRectangle* allocation, gpointer self);
 
 
 static Block1Data* block1_data_ref (Block1Data* _data1_) {
@@ -194,6 +199,7 @@ void add_entry_to_list_box (GtkTreeView* list_box, const gchar* content) {
 		iter = _tmp6_;
 		gtk_list_store_set (list_model, &iter, 0, content, -1);
 		gee_abstract_map_set ((GeeAbstractMap*) content_table, cksum, &iter);
+		new_insert = TRUE;
 		_g_object_unref0 (list_model);
 	}
 	_tmp7_ = gtk_tree_view_get_selection (list_box);
@@ -348,6 +354,7 @@ static void block2_data_unref (Block2Data* _data2_) {
 	if (g_atomic_int_dec_and_test (&_data2_->_ref_count_)) {
 		_g_free0 (_data2_->content);
 		_g_object_unref0 (_data2_->list_box);
+		_g_object_unref0 (_data2_->list_view);
 		g_slice_free (Block2Data, _data2_);
 	}
 }
@@ -405,6 +412,30 @@ static void __lambda3__gtk_clipboard_owner_change (GtkClipboard* _sender, GdkEve
 }
 
 
+static void _lambda4_ (GdkRectangle* rect, Block2Data* _data2_) {
+	if (new_insert) {
+		GtkAdjustment* _tmp0_ = NULL;
+		GtkAdjustment* _tmp1_;
+		GtkAdjustment* vadj;
+		gdouble _tmp2_;
+		gdouble _tmp3_;
+		_tmp0_ = gtk_scrolled_window_get_vadjustment (_data2_->list_view);
+		_tmp1_ = _g_object_ref0 (_tmp0_);
+		vadj = _tmp1_;
+		_tmp2_ = gtk_adjustment_get_upper (vadj);
+		_tmp3_ = gtk_adjustment_get_page_size (vadj);
+		gtk_adjustment_set_value (vadj, _tmp2_ - _tmp3_);
+		_g_object_unref0 (vadj);
+	}
+	new_insert = FALSE;
+}
+
+
+static void __lambda4__gtk_widget_size_allocate (GtkWidget* _sender, GdkRectangle* allocation, gpointer self) {
+	_lambda4_ (allocation, self);
+}
+
+
 gint _vala_main (gchar** args, int args_length1) {
 	gint result = 0;
 	Block2Data* _data2_;
@@ -416,7 +447,6 @@ gint _vala_main (gchar** args, int args_length1) {
 	GtkVBox* _tmp3_ = NULL;
 	GtkVBox* vbox;
 	GtkScrolledWindow* _tmp4_ = NULL;
-	GtkScrolledWindow* list_view;
 	GtkTreeView* _tmp5_ = NULL;
 	GtkButton* _tmp6_ = NULL;
 	GtkButton* _tmp7_ = NULL;
@@ -437,14 +467,14 @@ gint _vala_main (gchar** args, int args_length1) {
 	_tmp3_ = (GtkVBox*) gtk_vbox_new (FALSE, 10);
 	vbox = g_object_ref_sink (_tmp3_);
 	_tmp4_ = (GtkScrolledWindow*) gtk_scrolled_window_new (NULL, NULL);
-	list_view = g_object_ref_sink (_tmp4_);
-	gtk_scrolled_window_set_policy (list_view, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type (list_view, GTK_SHADOW_ETCHED_IN);
+	_data2_->list_view = g_object_ref_sink (_tmp4_);
+	gtk_scrolled_window_set_policy (_data2_->list_view, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type (_data2_->list_view, GTK_SHADOW_ETCHED_IN);
 	_tmp5_ = (GtkTreeView*) gtk_tree_view_new ();
 	_data2_->list_box = g_object_ref_sink (_tmp5_);
 	setup_list_box (_data2_->list_box);
-	gtk_container_add ((GtkContainer*) list_view, (GtkWidget*) _data2_->list_box);
-	gtk_box_pack_start ((GtkBox*) vbox, (GtkWidget*) list_view, TRUE, TRUE, (guint) 0);
+	gtk_container_add ((GtkContainer*) _data2_->list_view, (GtkWidget*) _data2_->list_box);
+	gtk_box_pack_start ((GtkBox*) vbox, (GtkWidget*) _data2_->list_view, TRUE, TRUE, (guint) 0);
 	_tmp6_ = (GtkButton*) gtk_button_new_with_label ("Delete");
 	_g_object_unref0 (delete_button);
 	delete_button = g_object_ref_sink (_tmp6_);
@@ -472,9 +502,9 @@ gint _vala_main (gchar** args, int args_length1) {
 	}
 	g_signal_connect ((GtkObject*) window, "destroy", (GCallback) _gtk_main_quit_gtk_object_destroy, NULL);
 	g_signal_connect_data (clip, "owner-change", (GCallback) __lambda3__gtk_clipboard_owner_change, block2_data_ref (_data2_), (GClosureNotify) block2_data_unref, 0);
+	g_signal_connect_data ((GtkWidget*) _data2_->list_box, "size-allocate", (GCallback) __lambda4__gtk_widget_size_allocate, block2_data_ref (_data2_), (GClosureNotify) block2_data_unref, 0);
 	gtk_main ();
 	result = 0;
-	_g_object_unref0 (list_view);
 	_g_object_unref0 (vbox);
 	_g_object_unref0 (panel);
 	_g_object_unref0 (window);

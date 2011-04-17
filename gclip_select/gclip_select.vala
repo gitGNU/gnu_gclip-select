@@ -24,6 +24,9 @@ using Gtk;
 using Gee;
 
 bool self_set = false;
+
+bool new_insert = false;
+
 Clipboard clip;
 
 HashMap<string, TreeIter?> content_table;
@@ -56,7 +59,6 @@ void setup_list_box(Gtk.TreeView list_box)
 			clip.set_text(content, -1);
 			self_set = true;
 		    delete_button.set_sensitive(true);
-           
 		}
 		else
 		{
@@ -84,12 +86,14 @@ void add_entry_to_list_box(TreeView list_box, string content)
 		
 		list_model.set(iter, 0, content);	
 		content_table[cksum] = iter;
+        new_insert = true;
 	}
 	TreeSelection selection = list_box.get_selection();
 	selection.select_iter(iter);
     delete_button.set_sensitive(true);
     delete_all_button.set_sensitive(true);
 
+    
 } 
 
 void delete_current_selection(TreeView list_box)
@@ -200,6 +204,22 @@ int main(string[] args)
 		else
 			self_set = false;
 	});
+	
+	list_box.size_allocate.connect( (rect) =>
+    {
+        if (new_insert)
+        {  /* if new insert, we need to bring the new selection into view */
+            Adjustment vadj = list_view.vadjustment;
+            
+            vadj.set_value(vadj.upper - vadj.page_size);
+            
+            
+        }
+        new_insert = false;
+            
+          
+        
+    });
 	
 	Gtk.main();
 	return 0;

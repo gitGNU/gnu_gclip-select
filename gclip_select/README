@@ -34,8 +34,12 @@ PARTICULAR PURPOSE. See the GNU General Public License for more details.
 Hopefully this program is useful to you.
 
 Changes: 
+     Version 0.4, 20110418: 
+Usability enhancements: proper enabling and disabling depending on states,
+content table sync to list model change, scrolling to the newly inserted
+selection
+     
 	 Version 0.3, 20110417: 
-
 put the selection list in a scroll window to enable better user management of
 the selection contents; also two buttons to allow the remove of one selection or
 all the selections from the selection list window
