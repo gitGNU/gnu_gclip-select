@@ -7,9 +7,13 @@
 	Software Foundation, either version 3 of the License, or (at your option)
 	any later version.
 
-	gclip_select is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+	gclip_select is distributed in the hope that it will be useful, but WITHOUT
+	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+	FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+	more details.
 
-	You should have received a copy of the GNU General Public License along with gclip_select. If not, see http://www.gnu.org/licenses/.
+	You should have received a copy of the GNU General Public License along with
+	gclip_select. If not, see http://www.gnu.org/licenses/.
 
 
 */
@@ -22,7 +26,10 @@ using Gee;
 bool self_set = false;
 Clipboard clip;
 
-HashMap<string, TreeIter?> content_table ;
+HashMap<string, TreeIter?> content_table;
+
+Gtk.Button delete_button;
+Gtk.Button delete_all_button;
 
 void setup_list_box(Gtk.TreeView list_box)
 {
@@ -48,7 +55,15 @@ void setup_list_box(Gtk.TreeView list_box)
 			list_model.get(iter, 0, out content, -1);
 			clip.set_text(content, -1);
 			self_set = true;
+		    delete_button.set_sensitive(true);
+           
 		}
+		else
+		{
+		    delete_button.set_sensitive(false);
+           
+		}
+		
 	});
 }
 
@@ -72,6 +87,8 @@ void add_entry_to_list_box(TreeView list_box, string content)
 	}
 	TreeSelection selection = list_box.get_selection();
 	selection.select_iter(iter);
+    delete_button.set_sensitive(true);
+    delete_all_button.set_sensitive(true);
 
 } 
 
@@ -82,10 +99,28 @@ void delete_current_selection(TreeView list_box)
 	TreeModel model;
 	if (selection.get_selected(out model, out iter))
 	{
+		MapIterator<string, TreeIter?> it = content_table.map_iterator();
 		ListStore list_model = (ListStore) model;
+		if (it.first())
+		while (it.has_next())
+		{
+		    if (it.get_value() == iter)
+		    {
+		        content_table.unset(it.get_key());
+		        break;
+		    }
+		    it.next();
+		}
 		selection.unselect_iter(iter);
 		list_model.remove(iter);
+        if (list_model.length == 0)
+            delete_all_button.set_sensitive(false);
 	}
+	if (!selection.get_selected(out model, out iter))
+	{
+        delete_button.set_sensitive(false);
+	}
+        
 }
 
 void delete_all_selection(TreeView list_box)
@@ -94,6 +129,9 @@ void delete_all_selection(TreeView list_box)
 	TreeSelection selection = list_box.get_selection();
 	selection.unselect_all();
 	list_model.clear();
+	content_table.clear();
+    delete_button.set_sensitive(false);
+    delete_all_button.set_sensitive(false);
 
 }
 
@@ -104,7 +142,7 @@ int main(string[] args)
 	content_table = new HashMap<string, TreeIter?>();
 	
 	Gtk.Window window = new Window();
-	Gtk.Button delete_button, delete_all_button;
+
 	Gtk.HBox panel = new Gtk.HBox(false, 4);
 	
 	window.title = "Clipboard Selection Manager";
@@ -141,6 +179,9 @@ int main(string[] args)
 	window.add(vbox);
 	window.set_default_size(200, 200);
 	window.show_all();
+
+	delete_button.set_sensitive(false);
+	delete_all_button.set_sensitive(false);
 	
 	clip = Clipboard.get(Gdk.SELECTION_PRIMARY);
 	string content = clip.wait_for_text();
@@ -153,8 +194,8 @@ int main(string[] args)
 	{
 		if (!self_set)
 		{
-		content = clip.wait_for_text();
-		add_entry_to_list_box(list_box, content);
+		    content = clip.wait_for_text();
+		    add_entry_to_list_box(list_box, content);
 	    }
 		else
 			self_set = false;
