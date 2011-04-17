@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 AM_CFLAGS = $(GUI_CFLAGS)
-AM_VALAFLAGS = --pkg "gtk+-2.0" --pkg "glib-2.0" --pkg gee-1.0 --pkg pango
+AM_VALAFLAGS = -g --save-temps --pkg "gtk+-2.0" --pkg "glib-2.0" --pkg gee-1.0 --pkg pango
 
 bin_PROGRAMS = gclip_select
 

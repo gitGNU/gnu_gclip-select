@@ -60,11 +60,17 @@ static void __lambda0__gtk_tree_selection_changed (GtkTreeSelection* _sender, gp
 static Block1Data* block1_data_ref (Block1Data* _data1_);
 static void block1_data_unref (Block1Data* _data1_);
 void add_entry_to_list_box (GtkTreeView* list_box, const char* content);
+void delete_current_selection (GtkTreeView* list_box);
+void delete_all_selection (GtkTreeView* list_box);
 gint _vala_main (char** args, int args_length1);
 static GtkTreeIter* _gtk_tree_iter_dup (GtkTreeIter* self);
+static void _lambda1_ (Block2Data* _data2_);
+static void __lambda1__gtk_button_released (GtkButton* _sender, gpointer self);
+static void _lambda2_ (Block2Data* _data2_);
+static void __lambda2__gtk_button_released (GtkButton* _sender, gpointer self);
 static void _gtk_main_quit_gtk_object_destroy (GtkObject* _sender, gpointer self);
-static void _lambda1_ (GdkEvent* e, Block2Data* _data2_);
-static void __lambda1__gtk_clipboard_owner_change (GtkClipboard* _sender, GdkEvent* p0, gpointer self);
+static void _lambda3_ (GdkEvent* e, Block2Data* _data2_);
+static void __lambda3__gtk_clipboard_owner_change (GtkClipboard* _sender, GdkEvent* p0, gpointer self);
 static Block2Data* block2_data_ref (Block2Data* _data2_);
 static void block2_data_unref (Block2Data* _data2_);
 
@@ -75,25 +81,35 @@ static gpointer _g_object_ref0 (gpointer self) {
 }
 
 
+#line 43 "gclip_select.vala"
 static void _lambda0_ (Block1Data* _data1_) {
+#line 87 "gclip_select.c"
 	GtkTreeIter iter = {0};
 	GtkTreeModel* model;
 	char* content;
 	GtkTreeModel* _tmp0_ = NULL;
-	GtkTreeModel* _tmp1_;
+	gboolean _tmp1_;
+	GtkTreeModel* _tmp2_;
 	model = NULL;
 	content = NULL;
-	gtk_tree_selection_get_selected (_data1_->selection, &_tmp0_, &iter);
-	model = (_tmp1_ = _g_object_ref0 (_tmp0_), _g_object_unref0 (model), _tmp1_);
-	gtk_tree_model_get ((GtkTreeModel*) _data1_->list_model, &iter, 0, &content, -1, -1);
-	gtk_clipboard_set_text (clip, content, -1);
-	self_set = TRUE;
+#line 49 "gclip_select.vala"
+	if ((_tmp1_ = gtk_tree_selection_get_selected (_data1_->selection, &_tmp0_, &iter), model = (_tmp2_ = _g_object_ref0 (_tmp0_), _g_object_unref0 (model), _tmp2_), _tmp1_)) {
+#line 51 "gclip_select.vala"
+		gtk_tree_model_get ((GtkTreeModel*) _data1_->list_model, &iter, 0, &content, -1, -1);
+#line 52 "gclip_select.vala"
+		gtk_clipboard_set_text (clip, content, -1);
+#line 53 "gclip_select.vala"
+		self_set = TRUE;
+#line 104 "gclip_select.c"
+	}
 	_g_free0 (content);
 	_g_object_unref0 (model);
 }
 
 
+#line 43 "gclip_select.vala"
 static void __lambda0__gtk_tree_selection_changed (GtkTreeSelection* _sender, gpointer self) {
+#line 113 "gclip_select.c"
 	_lambda0_ (self);
 }
 
@@ -113,50 +129,135 @@ static void block1_data_unref (Block1Data* _data1_) {
 }
 
 
+#line 30 "gclip_select.vala"
 void setup_list_box (GtkTreeView* list_box) {
+#line 135 "gclip_select.c"
 	Block1Data* _data1_;
 	GtkCellRendererText* text_renderer;
+#line 30 "gclip_select.vala"
 	g_return_if_fail (list_box != NULL);
+#line 140 "gclip_select.c"
 	_data1_ = g_slice_new0 (Block1Data);
 	_data1_->_ref_count_ = 1;
 	_data1_->list_model = gtk_list_store_new (1, G_TYPE_STRING);
+#line 33 "gclip_select.vala"
 	gtk_tree_view_set_rules_hint (list_box, TRUE);
+#line 34 "gclip_select.vala"
 	gtk_tree_view_set_model (list_box, (GtkTreeModel*) _data1_->list_model);
+#line 35 "gclip_select.vala"
 	text_renderer = g_object_ref_sink ((GtkCellRendererText*) gtk_cell_renderer_text_new ());
+#line 36 "gclip_select.vala"
 	g_object_set (text_renderer, "ellipsize-set", TRUE, NULL);
+#line 37 "gclip_select.vala"
 	g_object_set (text_renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+#line 39 "gclip_select.vala"
 	gtk_tree_view_insert_column_with_attributes (list_box, -1, "Clip content Selector", (GtkCellRenderer*) text_renderer, "text", 0, NULL);
+#line 40 "gclip_select.vala"
 	gtk_tree_view_set_headers_visible (list_box, FALSE);
+#line 158 "gclip_select.c"
 	_data1_->selection = _g_object_ref0 (gtk_tree_view_get_selection (list_box));
+#line 43 "gclip_select.vala"
 	g_signal_connect_data (_data1_->selection, "changed", (GCallback) __lambda0__gtk_tree_selection_changed, block1_data_ref (_data1_), (GClosureNotify) block1_data_unref, 0);
+#line 162 "gclip_select.c"
 	_g_object_unref0 (text_renderer);
 	block1_data_unref (_data1_);
 }
 
 
+#line 58 "gclip_select.vala"
 void add_entry_to_list_box (GtkTreeView* list_box, const char* content) {
+#line 170 "gclip_select.c"
 	GtkTreeIter iter = {0};
 	char* cksum;
 	GtkTreeSelection* selection;
+#line 58 "gclip_select.vala"
 	g_return_if_fail (list_box != NULL);
+#line 58 "gclip_select.vala"
 	g_return_if_fail (content != NULL);
+#line 61 "gclip_select.vala"
 	cksum = g_compute_checksum_for_string (G_CHECKSUM_SHA256, content, -1);
+#line 62 "gclip_select.vala"
 	if (gee_abstract_map_has_key ((GeeAbstractMap*) content_table, cksum)) {
+#line 182 "gclip_select.c"
 		GtkTreeIter* _tmp0_;
+#line 64 "gclip_select.vala"
 		iter = *(_tmp0_ = (GtkTreeIter*) gee_abstract_map_get ((GeeAbstractMap*) content_table, cksum));
+#line 186 "gclip_select.c"
 		_g_free0 (_tmp0_);
 	} else {
 		GtkListStore* list_model;
+#line 70 "gclip_select.vala"
 		list_model = _g_object_ref0 (GTK_LIST_STORE (gtk_tree_view_get_model (list_box)));
+#line 71 "gclip_select.vala"
 		gtk_list_store_append (list_model, &iter);
+#line 73 "gclip_select.vala"
 		gtk_list_store_set (list_model, &iter, 0, content, -1);
+#line 74 "gclip_select.vala"
 		gee_abstract_map_set ((GeeAbstractMap*) content_table, cksum, &iter);
+#line 198 "gclip_select.c"
 		_g_object_unref0 (list_model);
 	}
+#line 76 "gclip_select.vala"
 	selection = _g_object_ref0 (gtk_tree_view_get_selection (list_box));
+#line 77 "gclip_select.vala"
 	gtk_tree_selection_select_iter (selection, &iter);
+#line 205 "gclip_select.c"
 	_g_object_unref0 (selection);
 	_g_free0 (cksum);
+}
+
+
+#line 81 "gclip_select.vala"
+void delete_current_selection (GtkTreeView* list_box) {
+#line 213 "gclip_select.c"
+	GtkTreeSelection* selection;
+	GtkTreeIter iter = {0};
+	GtkTreeModel* model;
+	GtkTreeModel* _tmp0_ = NULL;
+	gboolean _tmp1_;
+	GtkTreeModel* _tmp2_;
+#line 81 "gclip_select.vala"
+	g_return_if_fail (list_box != NULL);
+#line 83 "gclip_select.vala"
+	selection = _g_object_ref0 (gtk_tree_view_get_selection (list_box));
+#line 224 "gclip_select.c"
+	model = NULL;
+#line 86 "gclip_select.vala"
+	if ((_tmp1_ = gtk_tree_selection_get_selected (selection, &_tmp0_, &iter), model = (_tmp2_ = _g_object_ref0 (_tmp0_), _g_object_unref0 (model), _tmp2_), _tmp1_)) {
+#line 228 "gclip_select.c"
+		GtkListStore* list_model;
+#line 88 "gclip_select.vala"
+		list_model = _g_object_ref0 (GTK_LIST_STORE (model));
+#line 89 "gclip_select.vala"
+		gtk_tree_selection_unselect_iter (selection, &iter);
+#line 90 "gclip_select.vala"
+		gtk_list_store_remove (list_model, &iter);
+#line 236 "gclip_select.c"
+		_g_object_unref0 (list_model);
+	}
+	_g_object_unref0 (model);
+	_g_object_unref0 (selection);
+}
+
+
+#line 94 "gclip_select.vala"
+void delete_all_selection (GtkTreeView* list_box) {
+#line 246 "gclip_select.c"
+	GtkListStore* list_model;
+	GtkTreeSelection* selection;
+#line 94 "gclip_select.vala"
+	g_return_if_fail (list_box != NULL);
+#line 96 "gclip_select.vala"
+	list_model = _g_object_ref0 (GTK_LIST_STORE (gtk_tree_view_get_model (list_box)));
+#line 97 "gclip_select.vala"
+	selection = _g_object_ref0 (gtk_tree_view_get_selection (list_box));
+#line 98 "gclip_select.vala"
+	gtk_tree_selection_unselect_all (selection);
+#line 99 "gclip_select.vala"
+	gtk_list_store_clear (list_model);
+#line 259 "gclip_select.c"
+	_g_object_unref0 (selection);
+	_g_object_unref0 (list_model);
 }
 
 
@@ -168,25 +269,68 @@ static GtkTreeIter* _gtk_tree_iter_dup (GtkTreeIter* self) {
 }
 
 
+#line 129 "gclip_select.vala"
+static void _lambda1_ (Block2Data* _data2_) {
+#line 131 "gclip_select.vala"
+	delete_current_selection (_data2_->list_box);
+#line 277 "gclip_select.c"
+}
+
+
+#line 129 "gclip_select.vala"
+static void __lambda1__gtk_button_released (GtkButton* _sender, gpointer self) {
+#line 283 "gclip_select.c"
+	_lambda1_ (self);
+}
+
+
+#line 135 "gclip_select.vala"
+static void _lambda2_ (Block2Data* _data2_) {
+#line 137 "gclip_select.vala"
+	delete_all_selection (_data2_->list_box);
+#line 292 "gclip_select.c"
+}
+
+
+#line 135 "gclip_select.vala"
+static void __lambda2__gtk_button_released (GtkButton* _sender, gpointer self) {
+#line 298 "gclip_select.c"
+	_lambda2_ (self);
+}
+
+
+#line 7766 "gtk+-2.0.vapi"
 static void _gtk_main_quit_gtk_object_destroy (GtkObject* _sender, gpointer self) {
+#line 305 "gclip_select.c"
 	gtk_main_quit ();
 }
 
 
-static void _lambda1_ (GdkEvent* e, Block2Data* _data2_) {
+#line 155 "gclip_select.vala"
+static void _lambda3_ (GdkEvent* e, Block2Data* _data2_) {
+#line 155 "gclip_select.vala"
 	g_return_if_fail (e != NULL);
+#line 157 "gclip_select.vala"
 	if (!self_set) {
+#line 316 "gclip_select.c"
 		char* _tmp0_;
+#line 159 "gclip_select.vala"
 		_data2_->content = (_tmp0_ = g_strdup (gtk_clipboard_wait_for_text (clip)), _g_free0 (_data2_->content), _tmp0_);
+#line 160 "gclip_select.vala"
 		add_entry_to_list_box (_data2_->list_box, _data2_->content);
+#line 322 "gclip_select.c"
 	} else {
+#line 163 "gclip_select.vala"
 		self_set = FALSE;
+#line 326 "gclip_select.c"
 	}
 }
 
 
-static void __lambda1__gtk_clipboard_owner_change (GtkClipboard* _sender, GdkEvent* p0, gpointer self) {
-	_lambda1_ (p0, self);
+#line 155 "gclip_select.vala"
+static void __lambda3__gtk_clipboard_owner_change (GtkClipboard* _sender, GdkEvent* p0, gpointer self) {
+#line 333 "gclip_select.c"
+	_lambda3_ (p0, self);
 }
 
 
@@ -205,7 +349,9 @@ static void block2_data_unref (Block2Data* _data2_) {
 }
 
 
+#line 103 "gclip_select.vala"
 gint _vala_main (char** args, int args_length1) {
+#line 355 "gclip_select.c"
 	gint result = 0;
 	Block2Data* _data2_;
 	GeeHashMap* _tmp0_;
@@ -220,37 +366,72 @@ gint _vala_main (char** args, int args_length1) {
 	GtkClipboard* _tmp3_;
 	_data2_ = g_slice_new0 (Block2Data);
 	_data2_->_ref_count_ = 1;
+#line 105 "gclip_select.vala"
 	gtk_init (&args_length1, &args);
+#line 107 "gclip_select.vala"
 	content_table = (_tmp0_ = gee_hash_map_new (G_TYPE_STRING, (GBoxedCopyFunc) g_strdup, g_free, GTK_TYPE_TREE_ITER, (GBoxedCopyFunc) _gtk_tree_iter_dup, g_free, NULL, NULL, NULL), _g_object_unref0 (content_table), _tmp0_);
+#line 109 "gclip_select.vala"
 	window = g_object_ref_sink ((GtkWindow*) gtk_window_new (GTK_WINDOW_TOPLEVEL));
+#line 376 "gclip_select.c"
 	delete_button = NULL;
 	delete_all_button = NULL;
+#line 111 "gclip_select.vala"
 	panel = g_object_ref_sink ((GtkHBox*) gtk_hbox_new (FALSE, 4));
+#line 113 "gclip_select.vala"
 	gtk_window_set_title (window, "Clipboard Selection Manager");
-	vbox = g_object_ref_sink ((GtkVBox*) gtk_vbox_new (FALSE, 2));
+#line 114 "gclip_select.vala"
+	vbox = g_object_ref_sink ((GtkVBox*) gtk_vbox_new (FALSE, 10));
+#line 116 "gclip_select.vala"
 	list_view = g_object_ref_sink ((GtkScrolledWindow*) gtk_scrolled_window_new (NULL, NULL));
+#line 118 "gclip_select.vala"
 	gtk_scrolled_window_set_policy (list_view, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+#line 119 "gclip_select.vala"
 	gtk_scrolled_window_set_shadow_type (list_view, GTK_SHADOW_ETCHED_IN);
+#line 391 "gclip_select.c"
 	_data2_->list_box = g_object_ref_sink ((GtkTreeView*) gtk_tree_view_new ());
+#line 122 "gclip_select.vala"
 	setup_list_box (_data2_->list_box);
+#line 123 "gclip_select.vala"
 	gtk_container_add ((GtkContainer*) list_view, (GtkWidget*) _data2_->list_box);
+#line 124 "gclip_select.vala"
 	gtk_box_pack_start ((GtkBox*) vbox, (GtkWidget*) list_view, TRUE, TRUE, 0);
+#line 127 "gclip_select.vala"
 	delete_button = (_tmp1_ = g_object_ref_sink ((GtkButton*) gtk_button_new_with_label ("Delete")), _g_object_unref0 (delete_button), _tmp1_);
+#line 129 "gclip_select.vala"
+	g_signal_connect_data (delete_button, "released", (GCallback) __lambda1__gtk_button_released, block2_data_ref (_data2_), (GClosureNotify) block2_data_unref, 0);
+#line 134 "gclip_select.vala"
 	delete_all_button = (_tmp2_ = g_object_ref_sink ((GtkButton*) gtk_button_new_with_label ("Delete All")), _g_object_unref0 (delete_all_button), _tmp2_);
+#line 135 "gclip_select.vala"
+	g_signal_connect_data (delete_all_button, "released", (GCallback) __lambda2__gtk_button_released, block2_data_ref (_data2_), (GClosureNotify) block2_data_unref, 0);
+#line 140 "gclip_select.vala"
 	gtk_box_pack_start ((GtkBox*) panel, (GtkWidget*) delete_button, FALSE, FALSE, 0);
+#line 141 "gclip_select.vala"
 	gtk_box_pack_start ((GtkBox*) panel, (GtkWidget*) delete_all_button, FALSE, FALSE, 0);
+#line 143 "gclip_select.vala"
 	gtk_box_pack_end ((GtkBox*) vbox, (GtkWidget*) panel, FALSE, FALSE, 0);
+#line 144 "gclip_select.vala"
 	gtk_container_add ((GtkContainer*) window, (GtkWidget*) vbox);
+#line 145 "gclip_select.vala"
 	gtk_window_set_default_size (window, 200, 200);
+#line 146 "gclip_select.vala"
 	gtk_widget_show_all ((GtkWidget*) window);
+#line 148 "gclip_select.vala"
 	clip = (_tmp3_ = _g_object_ref0 (gtk_clipboard_get (GDK_SELECTION_PRIMARY)), _g_object_unref0 (clip), _tmp3_);
+#line 421 "gclip_select.c"
 	_data2_->content = g_strdup (gtk_clipboard_wait_for_text (clip));
+#line 150 "gclip_select.vala"
 	if (_data2_->content != NULL) {
+#line 151 "gclip_select.vala"
 		add_entry_to_list_box (_data2_->list_box, _data2_->content);
+#line 427 "gclip_select.c"
 	}
+#line 153 "gclip_select.vala"
 	g_signal_connect ((GtkObject*) window, "destroy", (GCallback) _gtk_main_quit_gtk_object_destroy, NULL);
-	g_signal_connect_data (clip, "owner-change", (GCallback) __lambda1__gtk_clipboard_owner_change, block2_data_ref (_data2_), (GClosureNotify) block2_data_unref, 0);
+#line 155 "gclip_select.vala"
+	g_signal_connect_data (clip, "owner-change", (GCallback) __lambda3__gtk_clipboard_owner_change, block2_data_ref (_data2_), (GClosureNotify) block2_data_unref, 0);
+#line 166 "gclip_select.vala"
 	gtk_main ();
+#line 435 "gclip_select.c"
 	result = 0;
 	_g_object_unref0 (list_view);
 	_g_object_unref0 (vbox);
@@ -259,13 +440,19 @@ gint _vala_main (char** args, int args_length1) {
 	_g_object_unref0 (delete_button);
 	_g_object_unref0 (window);
 	block2_data_unref (_data2_);
+#line 167 "gclip_select.vala"
 	return result;
+#line 446 "gclip_select.c"
 }
 
 
+#line 103 "gclip_select.vala"
 int main (int argc, char ** argv) {
+#line 103 "gclip_select.vala"
 	g_type_init ();
+#line 103 "gclip_select.vala"
 	return _vala_main (argv, argc);
+#line 456 "gclip_select.c"
 }
 
 

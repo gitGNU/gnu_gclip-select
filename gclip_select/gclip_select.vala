@@ -46,11 +46,12 @@ void setup_list_box(Gtk.TreeView list_box)
         TreeIter iter;
         TreeModel model;
         string content;
-        selection.get_selected(out model, out iter);
-        list_model.get(iter, 0, out content, -1);
-        clip.set_text(content, -1);
-        self_set = true;
-    
+        if (selection.get_selected(out model, out iter))
+        {
+			list_model.get(iter, 0, out content, -1);
+			clip.set_text(content, -1);
+			self_set = true;
+        }
     });
 }
 
@@ -75,6 +76,28 @@ void add_entry_to_list_box(TreeView list_box, string content)
     TreeSelection selection = list_box.get_selection();
     selection.select_iter(iter);
 
+} 
+
+void delete_current_selection(TreeView list_box)
+{
+    TreeSelection selection = list_box.get_selection();
+    TreeIter iter;
+    TreeModel model;
+    if (selection.get_selected(out model, out iter))
+    {
+        ListStore list_model = (ListStore) model;
+        selection.unselect_iter(iter);
+        list_model.remove(iter);
+    }
+}
+
+void delete_all_selection(TreeView list_box)
+{
+    ListStore list_model = (ListStore) list_box.get_model();
+    TreeSelection selection = list_box.get_selection();
+    selection.unselect_all();
+    list_model.clear();
+
 }
 
 int main(string[] args)
@@ -88,7 +111,7 @@ int main(string[] args)
     Gtk.HBox panel = new Gtk.HBox(false, 4);
     
     window.title = "Clipboard Selection Manager";
-    Gtk.VBox vbox = new Gtk.VBox(false, 2);
+    Gtk.VBox vbox = new Gtk.VBox(false, 10);
     
     Gtk.ScrolledWindow list_view = new ScrolledWindow(null, null);
     
@@ -102,8 +125,18 @@ int main(string[] args)
     
     
     delete_button = new Button.with_label("Delete");
-    delete_all_button = new Button.with_label("Delete All");
     
+    delete_button.released.connect( () =>
+    {
+        delete_current_selection(list_box);
+    } );
+    
+    delete_all_button = new Button.with_label("Delete All");
+    delete_all_button.released.connect( () =>
+    {
+        delete_all_selection(list_box);
+    } );
+   
     panel.pack_start(delete_button, false, false);
     panel.pack_start(delete_all_button, false, false);
     

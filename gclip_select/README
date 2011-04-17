@@ -33,7 +33,12 @@ PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 Hopefully this program is useful to you.
 
-Changes:
+Changes: 
+     Version 0.3, 20110417: 
+
+put the selection list in a scroll window to enable better user management of
+the selection contents; also two buttons to allow the remove of one selection or
+all the selections from the selection list window
      
      Version 0.2, 20110408: add check for duplicated selections, to avoid adding
         duplicated entries
