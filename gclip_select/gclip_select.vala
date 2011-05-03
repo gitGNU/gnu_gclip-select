@@ -23,7 +23,7 @@ using Pango;
 using Gtk;
 using Gee;
 
-bool self_set = false;
+bool self_clip_set = false;
 
 bool new_insert = false;
 
@@ -48,16 +48,20 @@ void setup_list_box(Gtk.TreeView list_box)
 	TreeSelection selection = list_box.get_selection();
 	
 	selection.changed.connect(() =>
-	{
-		
+	{		
 		TreeIter iter;
 		TreeModel model;
 		string content;
 		if (selection.get_selected(out model, out iter))
 		{
 			list_model.get(iter, 0, out content, -1);
-			clip.set_text(content, -1);
-			self_set = true;
+			
+			if (!new_insert) 
+			{
+			    clip.set_text(content, -1);
+			    self_clip_set = true;
+			}
+			
 		    delete_button.set_sensitive(true);
 		}
 		else
@@ -65,7 +69,8 @@ void setup_list_box(Gtk.TreeView list_box)
 		    delete_button.set_sensitive(false);
            
 		}
-		
+		new_insert = false;    
+         
 	});
 }
 
@@ -90,6 +95,7 @@ void add_entry_to_list_box(TreeView list_box, string content)
 	}
 	TreeSelection selection = list_box.get_selection();
 	selection.select_iter(iter);
+	
     delete_button.set_sensitive(true);
     delete_all_button.set_sensitive(true);
 
@@ -196,13 +202,13 @@ int main(string[] args)
 	
 	clip.owner_change.connect((e) =>
 	{
-		if (!self_set)
+		if (!self_clip_set)
 		{
 		    content = clip.wait_for_text();
 		    add_entry_to_list_box(list_box, content);
 	    }
 		else
-			self_set = false;
+			self_clip_set = false;
 	});
 	
 	list_box.size_allocate.connect( (rect) =>
@@ -215,9 +221,6 @@ int main(string[] args)
             
             
         }
-        new_insert = false;
-            
-          
         
     });
 	

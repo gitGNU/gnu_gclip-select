@@ -49,8 +49,8 @@ struct _Block2Data {
 };
 
 
-extern gboolean self_set;
-gboolean self_set = FALSE;
+extern gboolean self_clip_set;
+gboolean self_clip_set = FALSE;
 extern gboolean new_insert;
 gboolean new_insert = FALSE;
 extern GtkClipboard* clip;
@@ -121,12 +121,15 @@ static void _lambda0_ (Block1Data* _data1_) {
 	iter = _tmp1_;
 	if (_tmp2_) {
 		gtk_tree_model_get ((GtkTreeModel*) _data1_->list_model, &iter, 0, &content, -1, -1);
-		gtk_clipboard_set_text (clip, content, -1);
-		self_set = TRUE;
+		if (!new_insert) {
+			gtk_clipboard_set_text (clip, content, -1);
+			self_clip_set = TRUE;
+		}
 		gtk_widget_set_sensitive ((GtkWidget*) delete_button, TRUE);
 	} else {
 		gtk_widget_set_sensitive ((GtkWidget*) delete_button, FALSE);
 	}
+	new_insert = FALSE;
 	_g_free0 (content);
 	_g_object_unref0 (model);
 }
@@ -395,14 +398,14 @@ static void _gtk_main_quit_gtk_object_destroy (GtkObject* _sender, gpointer self
 
 static void _lambda3_ (GdkEvent* e, Block2Data* _data2_) {
 	g_return_if_fail (e != NULL);
-	if (!self_set) {
+	if (!self_clip_set) {
 		gchar* _tmp0_ = NULL;
 		_tmp0_ = gtk_clipboard_wait_for_text (clip);
 		_g_free0 (_data2_->content);
 		_data2_->content = _tmp0_;
 		add_entry_to_list_box (_data2_->list_box, _data2_->content);
 	} else {
-		self_set = FALSE;
+		self_clip_set = FALSE;
 	}
 }
 
@@ -427,7 +430,6 @@ static void _lambda4_ (GdkRectangle* rect, Block2Data* _data2_) {
 		gtk_adjustment_set_value (vadj, _tmp2_ - _tmp3_);
 		_g_object_unref0 (vadj);
 	}
-	new_insert = FALSE;
 }
 
 
