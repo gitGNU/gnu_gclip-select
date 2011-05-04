@@ -35,10 +35,10 @@ Hopefully this program is useful to you.
 
 Changes: 
      Version 0.5, 20110504:     
-     work around gtk+ programs which sets the X primary selection for each
-     character as you drag-select, which was to only insert a new X primary
-     selection which was set at least 0.6 sec ago; fix a bug where the X
-     selection was forcebily transferrred to this program upon making a new
+     work around the gtk+ behavior which sets the X primary selection for each
+     character as you drag-select; now  gclip_select only inserts a new X primary
+     selection which was set at least 0.9 sec ago; fix a bug where the X
+     selection ownership was by force transferred to this program upon making a new
      selection which was not necessary
      
      Version 0.4, 20110418: 
