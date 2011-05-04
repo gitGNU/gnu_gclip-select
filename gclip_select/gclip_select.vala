@@ -29,6 +29,8 @@ bool new_insert = false;
 
 Clipboard clip;
 
+uint32 selection_time = 0;
+
 HashMap<string, TreeIter?> content_table;
 
 Gtk.Button delete_button;
@@ -69,7 +71,7 @@ void setup_list_box(Gtk.TreeView list_box)
 		    delete_button.set_sensitive(false);
            
 		}
-		new_insert = false;    
+		
          
 	});
 }
@@ -78,10 +80,11 @@ void add_entry_to_list_box(TreeView list_box, string content)
 {
 	TreeIter iter;
 	string cksum = Checksum.compute_for_string(GLib.ChecksumType.SHA256, content);
+	if (content.length == 0)
+	    return;
 	if (content_table.has_key(cksum))
 	{
 		iter = content_table[cksum];
-	
 	}
 	else
 	{
@@ -202,26 +205,39 @@ int main(string[] args)
 	
 	clip.owner_change.connect((e) =>
 	{
-		if (!self_clip_set)
-		{
-		    content = clip.wait_for_text();
-		    add_entry_to_list_box(list_box, content);
-	    }
-		else
-			self_clip_set = false;
+	    /*  const  */ int WAIT_TIME = 900; /*  in ms  */
+	    selection_time = e.get_time();
+	    TimeoutSource time_out = new TimeoutSource(WAIT_TIME);
+	    time_out.set_callback( () =>
+	    {
+            if (time_t() - selection_time >= WAIT_TIME)
+            {
+                if (!self_clip_set)
+                {
+                    content = clip.wait_for_text();
+                    add_entry_to_list_box(list_box, content);
+                }
+                else
+                    self_clip_set = false;
+            }
+	        return false;    
+	    });
+	    
+	    time_out.attach(null);
+	    
 	});
+	
 	
 	list_box.size_allocate.connect( (rect) =>
     {
+        
         if (new_insert)
         {  /* if new insert, we need to bring the new selection into view */
             Adjustment vadj = list_view.vadjustment;
             
             vadj.set_value(vadj.upper - vadj.page_size);
-            
-            
         }
-        
+        new_insert = false;    
     });
 	
 	Gtk.main();
