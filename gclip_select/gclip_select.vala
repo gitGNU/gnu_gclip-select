@@ -79,9 +79,9 @@ void setup_list_box(Gtk.TreeView list_box)
 void add_entry_to_list_box(TreeView list_box, string content)
 {
 	TreeIter iter;
-	string cksum = Checksum.compute_for_string(GLib.ChecksumType.SHA256, content);
 	if (content.length == 0)
 	    return;
+	string cksum = Checksum.compute_for_string(GLib.ChecksumType.SHA256, content);
 	if (content_table.has_key(cksum))
 	{
 		iter = content_table[cksum];
