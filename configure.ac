@@ -1,4 +1,4 @@
-AC_INIT(gclip-select, 0.5)
+AC_INIT(gclip-select, 0.6)
 
 AC_CONFIG_SRCDIR([gclip_select.vala])
 AC_CONFIG_MACRO_DIR([m4])
@@ -24,7 +24,7 @@ AM_PROG_VALAC([0.7.0])
 
 AC_DEFINE(_GNU_SOURCE, 1)
 
-PKG_CHECK_MODULES(GUI, [gtk+-2.0 glib-2.0 gee-1.0 pango])
+PKG_CHECK_MODULES(GUI, [gtk+-3.0 glib-2.0 gee-0.8 pango])
 
 AC_SUBST(GUI_CFLAGS)
 
