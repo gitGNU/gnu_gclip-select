@@ -1,5 +1,5 @@
 /*
-	Copyright 2011 Li-Cheng (Andy) Tai
+	Copyright 2011, 2013 Li-Cheng (Andy) Tai
                       atai@atai.org
                       
 	gclip_select is free software: you can redistribute it and/or modify it
@@ -112,21 +112,20 @@ void delete_current_selection(TreeView list_box)
 	TreeModel model;
 	if (selection.get_selected(out model, out iter))
 	{
-		MapIterator<string, TreeIter?> it = content_table.map_iterator();
+		
 		ListStore list_model = (ListStore) model;
-		if (it.first())
-		while (it.has_next())
+		foreach (var entry in content_table.entries)
 		{
-		    if (it.get_value() == iter)
+		    if (entry.value == iter)
 		    {
-		        content_table.unset(it.get_key());
+		        content_table.unset(entry.key);
 		        break;
 		    }
-		    it.next();
+		    
 		}
 		selection.unselect_iter(iter);
 		list_model.remove(iter);
-        if (list_model.length == 0)
+        if (list_model.get_iter_first(out iter) == false)
             delete_all_button.set_sensitive(false);
 	}
 	if (!selection.get_selected(out model, out iter))
@@ -174,15 +173,17 @@ int main(string[] args)
 	
 	delete_button = new Button.with_label("Delete");
 	
-	delete_button.released.connect( () =>
+	delete_button.button_release_event.connect( () =>
 	{
 		delete_current_selection(list_box);
+		return false;
 	} );
 	
 	delete_all_button = new Button.with_label("Delete All");
-	delete_all_button.released.connect( () =>
+	delete_all_button.button_release_event.connect( () =>
 	{
 		delete_all_selection(list_box);
+		return false;
 	} );
    
 	panel.pack_start(delete_button, false, false);
