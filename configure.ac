@@ -1,4 +1,4 @@
-AC_INIT(gclip-select, 0.6)
+AC_INIT(gclip_select, 0.6)
 
 AC_CONFIG_SRCDIR([gclip_select.vala])
 AC_CONFIG_MACRO_DIR([m4])
