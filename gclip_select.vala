@@ -38,7 +38,7 @@ Gtk.Button delete_all_button;
 
 void setup_list_box(Gtk.TreeView list_box)
 {
-	var list_model = new ListStore(1, typeof(string));
+	var list_model = new Gtk.ListStore(1, typeof(string));
 	list_box.set_rules_hint(true);
 	list_box.set_model(list_model);
 	CellRendererText text_renderer = new CellRendererText();
@@ -89,7 +89,7 @@ void add_entry_to_list_box(TreeView list_box, string content)
 	else
 	{
 		
-		ListStore list_model = (ListStore) list_box.get_model();
+		Gtk.ListStore list_model = (Gtk.ListStore) list_box.get_model();
 		list_model.append(out iter);
 		
 		list_model.set(iter, 0, content);	
@@ -113,7 +113,7 @@ void delete_current_selection(TreeView list_box)
 	if (selection.get_selected(out model, out iter))
 	{
 		
-		ListStore list_model = (ListStore) model;
+		Gtk.ListStore list_model = (Gtk.ListStore) model;
 		foreach (var entry in content_table.entries)
 		{
 		    if (entry.value == iter)
@@ -137,7 +137,7 @@ void delete_current_selection(TreeView list_box)
 
 void delete_all_selection(TreeView list_box)
 {
-	ListStore list_model = (ListStore) list_box.get_model();
+	Gtk.ListStore list_model = (Gtk.ListStore) list_box.get_model();
 	TreeSelection selection = list_box.get_selection();
 	selection.unselect_all();
 	list_model.clear();
